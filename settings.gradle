@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name = "magic_cube_app"
