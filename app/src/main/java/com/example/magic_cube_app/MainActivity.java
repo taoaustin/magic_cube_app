@@ -5,27 +5,37 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button turnR, turnRi, turnL, turnLi, turnU, turnUi, turnD, turnDi, turnF, turnFi, turnB, turnBi;
+    Button turnR, turnRi, turnL, turnLi, turnU, turnUi, turnD, turnDi, turnF, turnFi, turnB, turnBi, scr, reset;
 
     View b1,b2,b3,b4,b5,b6,b7,b8,
             l1,l2,l3,l4,l5,l6,l7,l8,
             u1,u2,u3,u4,u5,u6,u7,u8,
             r1,r2,r3,r4,r5,r6,r7,r8,
-            f1,f2,f3,f4,f5,f6,f7,f8,
-            d1,d2,d3,d4,d5,d6,d7,d8;
+            f1,f2,f3,f4,f5,f6,f7,f8,                               //    | 0 |        the faces of the cube are arranged as such: (B)ack face->0 , (L)eft face->1 ,
+            d1,d2,d3,d4,d5,d6,d7,d8;                               //  =========      (U)p face->2 , (R)ight face->3 , (F)ront face->4 , (D)own face->5
+                                                                   //  1 | 2 | 3
+    TextView scrText;                                              //  =========
+    Chronometer chrono;                                            //    | 4 |
+                                                                   //  =========
+    private boolean solving = false;                               //    | 5 |
+    private boolean firstMove = true;
 
-    private char[][] cube = new char[6][8]; {
-        Arrays.fill(cube[0], 'O');
-        Arrays.fill(cube[1], 'B');
-        Arrays.fill(cube[2], 'Y');
-        Arrays.fill(cube[3], 'G');
+    private char[][] cube = new char[6][8]; {                      //  0 | 1 | 2      each face of the "cube" is arranged with indices like this and,
+        Arrays.fill(cube[0], 'O');                            //  =========      for example: b1->cube[0][0] , b2->cube[0][1] , b3->cube[0][2] ,
+        Arrays.fill(cube[1], 'B');                            //  7 |   | 3                   b4->cube[0][3], ... etc.
+        Arrays.fill(cube[2], 'Y');                            //  =========
+        Arrays.fill(cube[3], 'G');                            //  6 | 5 | 4
         Arrays.fill(cube[4], 'R');
         Arrays.fill(cube[5], 'W');
     }
@@ -72,6 +82,93 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
                 count++;
+            }
+        }
+    }
+
+    private String[] createScramble() {//creates a scramble sequence of length 20 of random faces and directions, where the same face isn't turned twice consecutively.
+        String[] faces = {"R","U","F","L","D","B"};
+        String[] dirs = {"","'","2"};
+        Random rand = new Random();
+        String[] result = new String[20];
+        int face = rand.nextInt(6);
+        int dir = rand.nextInt(3);
+        result[0] = faces[face]+dirs[dir];
+        int i = 1;
+        while (i < 20) {
+            face = rand.nextInt(6);
+            dir = rand.nextInt(3);
+            if (!result[i-1].contains(faces[face])) {
+                result[i] = faces[face]+dirs[dir];
+                i++;
+            }
+        }
+        return result;
+    }
+
+    private void scramble(String[] seq) {//given a scramble sequence (from the createScramble() method) performs the scramble on the cube.
+        for (String s : seq) {
+            switch(s) {
+                case "R":
+                    turnR.performClick();
+                    break;
+                case "R'":
+                    turnRi.performClick();
+                    break;
+                case "R2":                    //any X2 move suffices by turning the designated face clockwise 2 times (180 degree turn)
+                    turnR.performClick();
+                    turnR.performClick();
+                    break;
+                case "L":
+                    turnL.performClick();
+                    break;
+                case "L'":
+                    turnLi.performClick();
+                    break;
+                case "L2":
+                    turnL.performClick();
+                    turnL.performClick();
+                    break;
+                case "U":
+                    turnU.performClick();
+                    break;
+                case "U'":
+                    turnUi.performClick();
+                    break;
+                case "U2":
+                    turnU.performClick();
+                    turnU.performClick();
+                    break;
+                case "D":
+                    turnD.performClick();
+                    break;
+                case "D'":
+                    turnDi.performClick();
+                    break;
+                case "D2":
+                    turnD.performClick();
+                    turnD.performClick();
+                    break;
+                case "F":
+                    turnF.performClick();
+                    break;
+                case "F'":
+                    turnFi.performClick();
+                    break;
+                case "F2":
+                    turnF.performClick();
+                    turnF.performClick();
+                    break;
+                case "B":
+                    turnB.performClick();
+                    break;
+                case "B'":
+                    turnBi.performClick();
+                    break;
+                case "B2":
+                    turnB.performClick();
+                    turnB.performClick();
+                    break;
             }
         }
     }
@@ -212,6 +309,57 @@ public class MainActivity extends AppCompatActivity {
         cube[1][2] = tmp2;
     }
 
+    private void startChrono() {
+        chrono.setBase(SystemClock.elapsedRealtime());
+        chrono.start();
+    }
+    private void stopChrono() {
+        chrono.stop();
+    }
+    private void resetChrono() {
+        stopChrono();
+        chrono.setBase(SystemClock.elapsedRealtime());
+    }
+
+    private boolean isSolved() {//checks if the cube in its current state is solved.
+        for (int i = 0; i < cube[0].length; i++) {
+            if (cube[0][i] != 'O')
+                return false;
+        }
+        for (int i = 0; i < cube[1].length; i++) {
+            if (cube[1][i] != 'B')
+                return false;
+        }
+        for (int i = 0; i < cube[2].length; i++) {
+            if (cube[2][i] != 'Y')
+                return false;
+        }
+        for (int i = 0; i < cube[3].length; i++) {
+            if (cube[3][i] != 'G')
+                return false;
+        }
+        for (int i = 0; i < cube[4].length; i++) {
+            if (cube[4][i] != 'R')
+                return false;
+        }
+        for (int i = 0; i < cube[5].length; i++) {
+            if (cube[5][i] != 'W')
+                return false;
+        }
+        return true;
+    }
+
+    private void timerConditions() {//checks if its right to either start or stop the timer
+        if (solving && firstMove) {
+            startChrono();
+            firstMove = false;
+        }
+        if (solving && isSolved()) {
+            stopChrono();
+            solving = false;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -229,6 +377,11 @@ public class MainActivity extends AppCompatActivity {
         turnFi = (Button) findViewById(R.id.btnFi);
         turnB = (Button) findViewById(R.id.btnB);
         turnBi = (Button) findViewById(R.id.btnBi);
+        scr = (Button) findViewById(R.id.btnScr);
+        reset = (Button) findViewById(R.id.btnReset);
+
+        scrText = (TextView) findViewById(R.id.textViewScr);
+        chrono = (Chronometer) findViewById(R.id.chronometer);
 
         b1 = findViewById(R.id.viewB1);
         b2 = findViewById(R.id.viewB2);
@@ -297,6 +450,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             clockwiseU();
             printCube();
+            timerConditions();
             }
         });
         turnUi.setOnClickListener(new View.OnClickListener() {
@@ -306,6 +460,7 @@ public class MainActivity extends AppCompatActivity {
             clockwiseU();
             clockwiseU();
             printCube();
+            timerConditions();
             }
         });
         turnR.setOnClickListener(new View.OnClickListener() {
@@ -313,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             clockwiseR();
             printCube();
+            timerConditions();
             }
         });
         turnRi.setOnClickListener(new View.OnClickListener() {
@@ -322,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
             clockwiseR();
             clockwiseR();
             printCube();
+            timerConditions();
             }
         });
         turnF.setOnClickListener(new View.OnClickListener() {
@@ -329,6 +486,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             clockwiseF();
             printCube();
+            timerConditions();
             }
         });
         turnFi.setOnClickListener(new View.OnClickListener() {
@@ -338,6 +496,7 @@ public class MainActivity extends AppCompatActivity {
             clockwiseF();
             clockwiseF();
             printCube();
+            timerConditions();
             }
         });
         turnD.setOnClickListener(new View.OnClickListener() {
@@ -345,6 +504,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             clockwiseD();
             printCube();
+            timerConditions();
             }
         });
         turnDi.setOnClickListener(new View.OnClickListener() {
@@ -354,6 +514,7 @@ public class MainActivity extends AppCompatActivity {
             clockwiseD();
             clockwiseD();
             printCube();
+            timerConditions();
             }
         });
         turnL.setOnClickListener(new View.OnClickListener() {
@@ -361,6 +522,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             clockwiseL();
             printCube();
+            timerConditions();
             }
         });
         turnLi.setOnClickListener(new View.OnClickListener() {
@@ -370,6 +532,7 @@ public class MainActivity extends AppCompatActivity {
             clockwiseL();
             clockwiseL();
             printCube();
+            timerConditions();
             }
         });
         turnB.setOnClickListener(new View.OnClickListener() {
@@ -377,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             clockwiseB();
             printCube();
+            timerConditions();
             }
         });
         turnBi.setOnClickListener(new View.OnClickListener() {
@@ -386,6 +550,36 @@ public class MainActivity extends AppCompatActivity {
             clockwiseB();
             clockwiseB();
             printCube();
+            timerConditions();
+            }
+        });
+        scr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] seq = createScramble();
+                reset.performClick(); //always starts scramble from solved state
+                scramble(seq);
+                String res = "";
+                for (String s : seq) {
+                    res += s+" ";
+                }
+                scrText.setText(res);
+                solving = true;
+                firstMove = true;
+            }
+        });
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {//reset to solved state, resets timer to 0
+                Arrays.fill(cube[0], 'O');
+                Arrays.fill(cube[1], 'B');
+                Arrays.fill(cube[2], 'Y');
+                Arrays.fill(cube[3], 'G');
+                Arrays.fill(cube[4], 'R');
+                Arrays.fill(cube[5], 'W');
+                printCube();
+                resetChrono();
+                solving = false;
             }
         });
     }
