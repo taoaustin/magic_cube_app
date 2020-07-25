@@ -3,6 +3,7 @@ package com.example.magic_cube_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -16,7 +17,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button turnR, turnRi, turnL, turnLi, turnU, turnUi, turnD, turnDi, turnF, turnFi, turnB, turnBi, scr, reset;
+    Button turnR, turnRi, turnL, turnLi, turnU, turnUi, turnD, turnDi, turnF, turnFi, turnB, turnBi, scr, reset, onlyTimer;
 
     View b1,b2,b3,b4,b5,b6,b7,b8,
             l1,l2,l3,l4,l5,l6,l7,l8,
@@ -359,6 +360,10 @@ public class MainActivity extends AppCompatActivity {
             solving = false;
         }
     }
+    public void openOnlyTimer() {//brings you to Activity2 where it is just the manual timer.
+        Intent intent = new Intent(this,MainActivity2.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,6 +384,7 @@ public class MainActivity extends AppCompatActivity {
         turnBi = (Button) findViewById(R.id.btnBi);
         scr = (Button) findViewById(R.id.btnScr);
         reset = (Button) findViewById(R.id.btnReset);
+        onlyTimer = (Button) findViewById(R.id.btnOnlyTimer);
 
         scrText = (TextView) findViewById(R.id.textViewScr);
         chrono = (Chronometer) findViewById(R.id.chronometer);
@@ -580,6 +586,12 @@ public class MainActivity extends AppCompatActivity {
                 printCube();
                 resetChrono();
                 solving = false;
+            }
+        });
+        onlyTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOnlyTimer();
             }
         });
     }
