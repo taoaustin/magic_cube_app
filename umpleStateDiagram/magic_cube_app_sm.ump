@@ -1,0 +1,35 @@
+class MagicCube {
+  
+  queued coreSm {
+    playing {
+      scramble / {startTimer();} -> timed2DSolving;
+      turn -> playing;
+      reset / {solveCube();} -> playing;
+      onlyTimer -> timedRealSolving;
+    }
+    timed2DSolving {
+      turn[!solved]-> timed2DSolving;
+      turn[solved]  / {stopTimer();}-> playing;
+      reset / {solveCube(); stopTimer();} -> playing;
+    }
+    timedRealSolving {
+      back -> playing;
+      stop {
+        starting / {startTimer();}-> start;
+      }
+      start {
+        stopping / {stopTimer();}-> stop;
+      }
+    }
+  }
+  
+  queued timerSm {
+    idle {
+      startTimer -> timing;
+    }
+    timing {
+      stopTimer -> idle;
+    }
+  }
+  
+}
