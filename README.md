@@ -1,5 +1,7 @@
 # SEG2105_A5
 My submission for assignment 5 for SEG2105
+Name: Austin Tao
+Student#: 300105416
 
  ## HOW TO DOWNLOAD 
   1. Download and install Android Studio
