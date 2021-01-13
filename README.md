@@ -5,7 +5,9 @@ This is an app I designed for an assignment in the past, simulates a "2D rubiks 
 
 # xxxxxxxxxxxx
 My submission for assignment x for x
+
 Name: Austin Tao
+
 Student#: x
 
  ## HOW TO DOWNLOAD 
