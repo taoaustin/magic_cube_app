@@ -1,7 +1,12 @@
-# SEG2105_A5
-My submission for assignment 5 for SEG2105
+This is an app I designed for an assignment in the past, simulates a "2D rubiks cube" written in Java
+
+
+
+
+# xxxxxxxxxxxx
+My submission for assignment x for x
 Name: Austin Tao
-Student#: 300105416
+Student#: x
 
  ## HOW TO DOWNLOAD 
   1. Download and install Android Studio
