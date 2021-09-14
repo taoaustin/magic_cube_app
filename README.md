@@ -1,15 +1,6 @@
 This is an app I designed for an assignment in the past, simulates a "2D rubiks cube" written in Java
 
 
-
-
-# xxxxxxxxxxxx
-My submission for assignment x for x
-
-Name: Austin Tao
-
-Student#: x
-
  ## HOW TO DOWNLOAD 
   1. Download and install Android Studio
   2. Download the GitHub repository **magic_cube_app-master.zip** and extract it
